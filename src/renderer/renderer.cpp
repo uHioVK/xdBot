@@ -291,7 +291,8 @@ void Renderer::start() {
             std::string file = audioMode == AudioMode::Song ? songFile : tempPathAudio;
             float offset = audioMode == AudioMode::Song ? songOffset : 0.28f;
 
-            if (!extraAudioArgs.empty()) extraAudioArgs += " ";
+            if (extraAudioArgs.empty()) extraAudioArgs = "-c:a aac -b:a 128k";
+            else extraAudioArgs += " ";
 
             command = std::format(
                 "\"{}\" -y -ss {} -i \"{}\" -i \"{}\" -t {} -c:v copy {} -filter:a \"[1:a]adelay=0|0{}{}\" \"{}\"",
