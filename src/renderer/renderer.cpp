@@ -143,9 +143,7 @@ void Renderer::start() {
     if (mod->getSavedValue<bool>("render_only_song")) audioMode = AudioMode::Song;
     if (mod->getSavedValue<bool>("render_record_audio")) audioMode = AudioMode::Record;
 
-    auto now = std::chrono::system_clock::now();
-    auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-    std::string filename = fmt::format("render_{}_{}.mp4", std::string_view(pl->m_level->m_levelName), std::to_string(timestamp));
+    std::string filename = fmt::format("{}.mkv", std::string_view(pl->m_level->m_levelName));
     std::string path = (Mod::get()->getSettingValue<std::filesystem::path>("render_folder") / filename).string();
 
     width = std::stoi(mod->getSavedValue<std::string>("render_width2"));
@@ -507,6 +505,11 @@ void Renderer::startAudio(PlayLayer* pl) {
         if (PauseLayer* layer = Global::getPauseLayer())
             layer->onResume(nullptr);
 
+        musicVolume = FMODAudioEngine::sharedEngine()->m_musicVolume;
+        sfxVolume = FMODAudioEngine::sharedEngine()->m_sfxVolume;
+        FMODAudioEngine::sharedEngine()->m_musicVolume = 1;
+        FMODAudioEngine::sharedEngine()->m_sfxVolume = 1;
+
         FMODAudioEngine::sharedEngine()->m_system->setOutput(FMOD_OUTPUTTYPE_WAVWRITER);
         startedAudio = true;
         if (CCNode* lbl = pl->getChildByID("recording-audio-label"_spr))
@@ -515,6 +518,8 @@ void Renderer::startAudio(PlayLayer* pl) {
 }
 
 void Renderer::stopAudio() {
+    FMODAudioEngine::sharedEngine()->m_musicVolume = musicVolume;
+    FMODAudioEngine::sharedEngine()->m_sfxVolume = sfxVolume;
     FMODAudioEngine::sharedEngine()->m_system->setOutput(FMOD_OUTPUTTYPE_AUTODETECT);
     recordingAudio = false;
     if (!PlayLayer::get()) return;

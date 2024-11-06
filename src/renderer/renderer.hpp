@@ -27,6 +27,8 @@ public:
     bool pause = false;
     int audioMode = 0;
 
+    float musicVolume = 1.f;
+    float sfxVolume = 1.f;
     bool dontRender = false;
     bool dontRecordAudio = false;
     bool recordingAudio = false;
