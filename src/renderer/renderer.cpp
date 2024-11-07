@@ -187,6 +187,12 @@ void Renderer::start() {
     currentFrame.resize(width * height * 3, 0);
     renderedFrames.clear();
 
+    musicVolume = FMODAudioEngine::sharedEngine()->m_musicVolume;
+    sfxVolume = FMODAudioEngine::sharedEngine()->m_sfxVolume;
+    FMODAudioEngine::sharedEngine()->m_system->setOutput(FMOD_OUTPUTTYPE_NOSOUND);
+    FMODAudioEngine::sharedEngine()->m_musicVolume = 1;
+    FMODAudioEngine::sharedEngine()->m_sfxVolume = 1;
+
     renderer.begin();
 
 
@@ -339,6 +345,10 @@ void Renderer::stop(int frame) {
     timeAfter = 0.f;
     renderedFrames.clear();
     finishFrame = frame;
+
+    FMODAudioEngine::sharedEngine()->m_musicVolume = musicVolume;
+    FMODAudioEngine::sharedEngine()->m_sfxVolume = sfxVolume;
+    FMODAudioEngine::sharedEngine()->m_system->setOutput(FMOD_OUTPUTTYPE_AUTODETECT);
 
     if (PlayLayer* pl = PlayLayer::get()) {
         if (pl->m_hasCompletedLevel)
